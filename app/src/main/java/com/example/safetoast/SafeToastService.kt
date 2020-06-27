@@ -19,9 +19,13 @@ object SafeToastService {
         if (Build.VERSION.SDK_INT == 25) {// 兼容android 7.1.1 toast崩溃问题
             if (name == Context.WINDOW_SERVICE && callFromToast()) {
                 if (mWindowManager == null) {
-                    mWindowManager = WindowManagerWrapper(
-                        baseService as WindowManager
-                    )
+                    synchronized(SafeToastService::class.java) {
+                        if (mWindowManager == null) {
+                            mWindowManager = WindowManagerWrapper(
+                                baseService as WindowManager
+                            )
+                        }
+                    }
                 }
                 return mWindowManager
             }
