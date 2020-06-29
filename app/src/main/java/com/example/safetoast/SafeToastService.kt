@@ -12,20 +12,13 @@ import android.view.WindowManager
  * Created by baiwenlong on 2020/6/28
  */
 object SafeToastService {
-    @Volatile
     private var mWindowManager: WindowManager? = null
 
     fun getSystemService(name: String, baseService: Any?): Any? {
         if (Build.VERSION.SDK_INT <= 25) {// 兼容android 7.1.1 toast崩溃问题
             if (name == Context.WINDOW_SERVICE && callFromToast()) {
                 if (mWindowManager == null) {
-                    synchronized(SafeToastService::class.java) {
-                        if (mWindowManager == null) {
-                            mWindowManager = WindowManagerWrapper(
-                                baseService as WindowManager
-                            )
-                        }
-                    }
+                    mWindowManager = WindowManagerWrapper(baseService as WindowManager)
                 }
                 return mWindowManager
             }
